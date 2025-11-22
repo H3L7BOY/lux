@@ -1,0 +1,14 @@
+{
+"name": "lux-bot",
+"version": "0.1.0",
+"main": "core/index.js",
+"scripts": {
+"start": "node core/index.js"
+},
+"dependencies": {
+"@adiwajshing/baileys": "^4.0.0",
+"pino": "^8.0.0",
+"dotenv": "^16.0.0",
+"better-sqlite3": "^8.0.0"
+}
+}
