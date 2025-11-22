@@ -5,7 +5,7 @@ build: .
 container_name: lux-bot
 volumes:
 - ./core/auth:/app/core/auth
-- ./data:/app/data
+- ./db:/app/db
 environment:
 - COMMAND_PREFIX=!
 - LOG_LEVEL=info
