@@ -1,6 +1,5 @@
 app = "lux-bot"
-
-primary_region = "ams" # or your closest region
+primary_region = "ord"
 
 [build]
   dockerfile = "Dockerfile"
@@ -9,6 +8,10 @@ primary_region = "ams" # or your closest region
   COMMAND_PREFIX = "!"
   LOG_LEVEL = "info"
 
-[mounts]
-  source="lux_data"
-  destination="/app"
+[[mounts]]
+  source = "lux_auth"
+  destination = "/app/core/auth"
+
+[[mounts]]
+  source = "lux_db"
+  destination = "/app/db"
