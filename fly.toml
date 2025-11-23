@@ -10,4 +10,4 @@ primary_region = "ord"
 
 [mounts]
   source = "lux_data"
-  destination = "/app"
+  destination = "/data"
