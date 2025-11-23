@@ -8,10 +8,6 @@ primary_region = "ord"
   COMMAND_PREFIX = "!"
   LOG_LEVEL = "info"
 
-[[mounts]]
-  source = "lux_auth"
-  destination = "/app/core/auth"
-
-[[mounts]]
-  source = "lux_db"
-  destination = "/app/db"
+[mounts]
+  source = "lux_data"
+  destination = "/app"
