@@ -1,22 +1,40 @@
+# Dockerfile for Lux WhatsApp bot (Fly-friendly)
 FROM node:20-alpine
+
+# Set working dir
 WORKDIR /app
 
-# Install build deps and app
-COPY package.json package-lock.json* ./
-RUN npm install --production
+# Ensure a predictable install environment
+ENV NODE_ENV=production
+ENV NPM_CONFIG_LOGLEVEL=warn
 
-# Copy app into image's /app (this will be available in container unless a volume overwrote it)
+# Install app dependencies (use package-lock if present)
+COPY package.json package-lock.json* ./
+RUN npm ci --production
+
+# Copy the rest of the app into the image
 COPY . .
 
-# Create directories that will be on the mounted volume
-# and create symlinks so your app still sees them at /app/core/auth and /app/db
+# Make the start script executable
+RUN if [ -f /app/core/start.sh ]; then chmod +x /app/core/start.sh; fi
+
+# Prepare folders used for persistence and ensure image has a copy of db code
+# (This gives the start.sh something to copy into the mounted volume on first run)
 RUN mkdir -p /data/auth /data/db \
- && rm -rf /app/core/auth /app/db 2>/dev/null || true \
+ && mkdir -p /app/db /app/core/auth \
+ && cp -R /app/db/* /data/db/ 2>/dev/null || true
+
+# Ensure symlinks are in place in the image (they will be re-created by start.sh at runtime if needed)
+RUN rm -rf /app/core/auth /app/db 2>/dev/null || true \
  && ln -s /data/auth /app/core/auth \
- && ln -s /data/db /app/db
+ && ln -s /data/db /app/db || true
 
-# Make sure node uses a non-root user if you want (optional)
-# RUN addgroup -S app && adduser -S app -G app && chown -R app:app /app /data
-# USER app
+# Expose no ports (bot does not serve HTTP)
+# VOLUME is managed by Fly; don't declare here
 
-CMD ["node", "core/index.js"]
+# Use start script which:
+# - ensures /data has required files
+# - copies db files into volume on first run (if missing)
+# - creates symlinks
+# - starts node
+CMD ["/app/core/start.sh"]
